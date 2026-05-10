@@ -268,4 +268,139 @@ body{background:var(--bg);color:var(--text);font-family:var(--ff-b);display:flex
         <div class="sbh" style="margin:0">Assignments</div>
         <button onclick="clearAll()" style="background:none;border:none;color:var(--text3);font-size:10px;cursor:pointer;font-family:var(--ff-b);">Clear All</button>
       </div>
-      <div class="mlist" id="mlist"><div style="text-align:center;padding:14px 0;color:var(--text3);fon
+      <div class="mlist" id="mlist"><div style="text-align:center;padding:14px 0;color:var(--text3);font-size:11px;">No keys assigned yet</div></div>
+    </div>
+  </div>
+
+  <!-- KEYBOARD -->
+  <div class="kba" onclick="kbaClick(event)">
+    <div class="kblbl">Keyboard Layout</div>
+    <div style="position:relative" id="kb-wrap">
+      <div id="ks-60">
+        <div class="kshell"><div class="kb" id="kb-60"></div></div>
+        <div class="kfloor"></div>
+        <div class="krefl-wrap"><div class="krefl-shell"><div class="kb" id="ref-60"></div></div></div>
+      </div>
+      <div id="ks-65" style="display:none"><div class="kshell"><div class="kb" id="kb-65"></div></div></div>
+      <div id="ks-75" style="display:none"><div class="kshell"><div class="kb" id="kb-75"></div></div></div>
+      <div id="ks-100" style="display:none"><div class="kshell"><div class="kb" id="kb-100"></div></div></div>
+    </div>
+    <div class="kbst">
+      <div class="kbst-i"><div class="kbst-d"></div> Mock Mode</div>
+      <div class="kbst-i">Layout: <span id="st-l">60%</span></div>
+      <div class="kbst-i">Assigned: <span id="st-a">0</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span id="tic">✓</span><span id="tmsg">Saved</span></div>
+
+<script>
+const SC={
+  developer:{"Save File":["Ctrl","S"],"Open Terminal":["Ctrl","`"],"Command Palette":["Ctrl","Shift","P"],"Format Code":["Alt","Shift","F"],"Go to Definition":["F12"],"Toggle Comment":["Ctrl","/"],"Find & Replace":["Ctrl","H"],"New Terminal":["Ctrl","Shift","`"]},
+  office:{"Copy":["Ctrl","C"],"Paste":["Ctrl","V"],"Switch App":["Alt","Tab"],"New Document":["Ctrl","N"],"Print":["Ctrl","P"],"Undo":["Ctrl","Z"],"Select All":["Ctrl","A"],"Bold Text":["Ctrl","B"]}
+};
+const LAYOUTS={
+  "60":[[{l:"ESC"},{l:"1"},{l:"2"},{l:"3"},{l:"4"},{l:"5"},{l:"6"},{l:"7"},{l:"8"},{l:"9"},{l:"0"},{l:"-"},{l:"="},{l:"BKSP",w:80}],[{l:"TAB",w:60},{l:"Q"},{l:"W"},{l:"E"},{l:"R"},{l:"T"},{l:"Y"},{l:"U"},{l:"I"},{l:"O"},{l:"P"},{l:"["},{l:"]"},{l:"\\",w:60}],[{l:"CAPS",w:70},{l:"A"},{l:"S"},{l:"D"},{l:"F"},{l:"G"},{l:"H"},{l:"J"},{l:"K"},{l:"L"},{l:";"},{l:"'"},{l:"ENTER",w:90}],[{l:"SHIFT",w:90},{l:"Z"},{l:"X"},{l:"C"},{l:"V"},{l:"B"},{l:"N"},{l:"M"},{l:","},{l:"."},{l:"/"},{l:"SHIFT",w:110}],[{l:"CTRL",w:58},{l:"WIN",w:48},{l:"ALT",w:48},{l:"SPACE",w:245},{l:"ALT",w:48},{l:"FN",w:48},{l:"CTRL",w:58}]],
+  "65":[[{l:"ESC"},{l:"1"},{l:"2"},{l:"3"},{l:"4"},{l:"5"},{l:"6"},{l:"7"},{l:"8"},{l:"9"},{l:"0"},{l:"-"},{l:"="},{l:"BKSP",w:80},{l:"DEL"}],[{l:"TAB",w:60},{l:"Q"},{l:"W"},{l:"E"},{l:"R"},{l:"T"},{l:"Y"},{l:"U"},{l:"I"},{l:"O"},{l:"P"},{l:"["},{l:"]"},{l:"\\",w:60},{l:"PGUP"}],[{l:"CAPS",w:70},{l:"A"},{l:"S"},{l:"D"},{l:"F"},{l:"G"},{l:"H"},{l:"J"},{l:"K"},{l:"L"},{l:";"},{l:"'"},{l:"ENTER",w:90},{l:"PGDN"}],[{l:"SHIFT",w:90},{l:"Z"},{l:"X"},{l:"C"},{l:"V"},{l:"B"},{l:"N"},{l:"M"},{l:","},{l:"."},{l:"/"},{l:"SHIFT",w:90},{l:"↑"}],[{l:"CTRL",w:54},{l:"WIN",w:44},{l:"ALT",w:44},{l:"SPACE",w:218},{l:"ALT",w:44},{l:"FN",w:44},{l:"←"},{l:"↓"},{l:"→"}]],
+  "75":[[{l:"ESC"},{l:"F1"},{l:"F2"},{l:"F3"},{l:"F4"},{l:"F5"},{l:"F6"},{l:"F7"},{l:"F8"},{l:"F9"},{l:"F10"},{l:"F11"},{l:"F12"},{l:"DEL"},{l:"PGUP"}],[{l:"~"},{l:"1"},{l:"2"},{l:"3"},{l:"4"},{l:"5"},{l:"6"},{l:"7"},{l:"8"},{l:"9"},{l:"0"},{l:"-"},{l:"="},{l:"BKSP",w:80},{l:"PGDN"}],[{l:"TAB",w:60},{l:"Q"},{l:"W"},{l:"E"},{l:"R"},{l:"T"},{l:"Y"},{l:"U"},{l:"I"},{l:"O"},{l:"P"},{l:"["},{l:"]"},{l:"\\",w:60},{l:"HOME"}],[{l:"CAPS",w:70},{l:"A"},{l:"S"},{l:"D"},{l:"F"},{l:"G"},{l:"H"},{l:"J"},{l:"K"},{l:"L"},{l:";"},{l:"'"},{l:"ENTER",w:90},{l:"END"}],[{l:"SHIFT",w:90},{l:"Z"},{l:"X"},{l:"C"},{l:"V"},{l:"B"},{l:"N"},{l:"M"},{l:","},{l:"."},{l:"/"},{l:"SHIFT",w:80},{l:"↑"},{l:"DEL"}],[{l:"CTRL",w:52},{l:"WIN",w:42},{l:"ALT",w:42},{l:"SPACE",w:192},{l:"ALT",w:42},{l:"FN",w:42},{l:"CTRL",w:42},{l:"←"},{l:"↓"},{l:"→"}]],
+  "100":[[{l:"ESC"},{l:"F1"},{l:"F2"},{l:"F3"},{l:"F4"},{l:"F5"},{l:"F6"},{l:"F7"},{l:"F8"},{l:"F9"},{l:"F10"},{l:"F11"},{l:"F12"},{l:"PRT"},{l:"SCR"},{l:"PAU"}],[{l:"~"},{l:"1"},{l:"2"},{l:"3"},{l:"4"},{l:"5"},{l:"6"},{l:"7"},{l:"8"},{l:"9"},{l:"0"},{l:"-"},{l:"="},{l:"BKSP",w:80},{l:"INS"},{l:"HOME"},{l:"PGUP"}],[{l:"TAB",w:60},{l:"Q"},{l:"W"},{l:"E"},{l:"R"},{l:"T"},{l:"Y"},{l:"U"},{l:"I"},{l:"O"},{l:"P"},{l:"["},{l:"]"},{l:"\\",w:60},{l:"DEL"},{l:"END"},{l:"PGDN"}],[{l:"CAPS",w:70},{l:"A"},{l:"S"},{l:"D"},{l:"F"},{l:"G"},{l:"H"},{l:"J"},{l:"K"},{l:"L"},{l:";"},{l:"'"},{l:"ENTER",w:90}],[{l:"SHIFT",w:90},{l:"Z"},{l:"X"},{l:"C"},{l:"V"},{l:"B"},{l:"N"},{l:"M"},{l:","},{l:"."},{l:"/"},{l:"SHIFT",w:110},{l:"↑"}],[{l:"CTRL",w:54},{l:"WIN",w:44},{l:"ALT",w:44},{l:"SPACE",w:218},{l:"ALT",w:44},{l:"WIN",w:44},{l:"MENU",w:44},{l:"CTRL",w:54},{l:"←"},{l:"↓"},{l:"→"}]]
+};
+
+let curL="60",selKey=null,asgns={},aType="text",curTab="editor",curPreset="developer";
+let pomoRun=false,pomoBreak=false,pomoS=25*60,pomoTotal=25*60,pomoCyc=0,pomoInt=null,dropOpen=false;
+
+function buildKey(k,size,ref=false){
+  const d=document.createElement('div');
+  d.className='key';
+  if(k.w)d.style.minWidth=k.w+'px';
+  d.textContent=k.l;
+  if(!ref){
+    const id=`${size}-${k.l}`;
+    d.dataset.key=id;
+    if(asgns[id])d.classList.add('assigned');
+    d.onclick=e=>{e.stopPropagation();selKey={el:d,label:k.l,size};
+      document.querySelectorAll('.key.selected').forEach(x=>x.classList.remove('selected'));
+      d.classList.add('selected');
+      renderKE(k.l,asgns[id]);aType=asgns[id]?asgns[id].type:'text';}
+  }else{d.style.pointerEvents='none';}
+  return d;
+}
+
+function buildKb(size,ref=false){
+  const pfx=ref?'ref-':'kb-';
+  const c=document.getElementById(pfx+size);
+  if(!c)return;c.innerHTML='';
+  LAYOUTS[size].forEach(row=>{
+    const r=document.createElement('div');r.className='kr';
+    row.forEach(k=>r.appendChild(buildKey(k,size,ref)));
+    c.appendChild(r);
+  });
+}
+
+function init(){
+  ['60','65','75','100'].forEach(s=>{buildKb(s,false);if(s==='60')buildKb(s,true);});
+  renderPomo();updatePill();renderSC();
+}
+
+function switchLayout(btn,size){
+  document.querySelectorAll('.lb').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  ['60','65','75','100'].forEach(s=>{const el=document.getElementById('ks-'+s);if(el)el.style.display=s===size?'block':'none';});
+  curL=size;
+  document.getElementById('st-l').textContent=size+'%';
+  selKey=null;
+  document.getElementById('kec').innerHTML='<div class="kempty"><div class="kempty-ic">⌨</div><div>Click a key to<br>configure it</div></div>';
+}
+
+function renderKE(label,asgn){
+  const t=aType;
+  const v=asgn&&asgn.type===t?asgn.value:'';
+  const n=asgn?asgn.notes||'':'';
+  const ph={text:'Type text output…',shortcut:'e.g. Ctrl+C',macro:'e.g. open_browser…'};
+  document.getElementById('kec').innerHTML=`
+    <div class="kbadge">⌨ ${label}</div>
+    <div class="typerow">
+      <button class="tybtn ${t==='text'?'active':''}" onclick="setAT(this,'text')"><span>T</span>TEXT</button>
+      <button class="tybtn ${t==='shortcut'?'active':''}" onclick="setAT(this,'shortcut')"><span>⌘</span>SHORTCUT</button>
+      <button class="tybtn ${t==='macro'?'active':''}" onclick="setAT(this,'macro')"><span>⚡</span>MACRO</button>
+    </div>
+    <label class="fl">${t==='text'?'Text Output':t==='shortcut'?'Shortcut':'Macro Name'}</label>
+    <input class="fi" id="fv" placeholder="${ph[t]}" value="${v}">
+    <label class="fl">Notes (optional)</label>
+    <input class="fi" id="fn2" placeholder="Add a note…" value="${n}">
+    <button class="sbtn" onclick="saveA()">Save Assignment</button>
+    <button class="cbtn" onclick="clearA()">Clear Key</button>`;
+}
+
+function setAT(btn,t){aType=t;document.querySelectorAll('.tybtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');if(!selKey)return;renderKE(selKey.label,asgns[`${selKey.size}-${selKey.label}`]);}
+function saveA(){if(!selKey)return;const v=document.getElementById('fv').value.trim();if(!v){showToast('⚠','Enter a value');return;}const n=document.getElementById('fn2').value.trim();const k=`${selKey.size}-${selKey.label}`;asgns[k]={type:aType,value:v,notes:n};selKey.el.classList.add('assigned');syncRef(selKey.label,true);updateSt();renderML();showToast('✓',`"${selKey.label}" assigned`);}
+function clearA(){if(!selKey)return;const k=`${selKey.size}-${selKey.label}`;delete asgns[k];selKey.el.classList.remove('assigned');syncRef(selKey.label,false);updateSt();renderML();showToast('🗑',`"${selKey.label}" cleared`);document.getElementById('kec').innerHTML='<div class="kempty"><div class="kempty-ic">⌨</div><div>Click a key to<br>configure it</div></div>';selKey=null;}
+function clearAll(){asgns={};document.querySelectorAll('.key.assigned').forEach(k=>k.classList.remove('assigned'));updateSt();renderML();showToast('🗑','All cleared');}
+function syncRef(label,on){document.querySelectorAll('#ref-60 .key').forEach(k=>{if(k.textContent===label){if(on)k.classList.add('assigned');else k.classList.remove('assigned');}});}
+function kbaClick(e){if(!e.target.classList.contains('key')){document.querySelectorAll('.key.selected').forEach(k=>k.classList.remove('selected'));selKey=null;}}
+function updateSt(){document.getElementById('st-a').textContent=Object.keys(asgns).length;}
+
+function switchTab(btn,tab){curTab=tab;document.querySelectorAll('.nt').forEach(b=>b.classList.remove('active'));btn.classList.add('active');['editor','shortcuts','mappings'].forEach(t=>{document.getElementById('sb-'+t).style.display=t===tab?'block':'none';});if(tab==='shortcuts')renderSC();if(tab==='mappings')renderML();}
+function switchPreset(btn,p){curPreset=p;document.querySelectorAll('.pbtn2').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderSC();}
+function renderSC(){document.getElementById('sclist').innerHTML=Object.entries(SC[curPreset]).map(([n,ks])=>`<div class="sci"><span class="scn">${n}</span><div class="scks">${ks.map((k,i)=>`<span class="kk">${k}</span>${i<ks.length-1?'<span class="kkp">+</span>':''}`).join('')}</div></div>`).join('');}
+function renderML(){const en=Object.entries(asgns);const el=document.getElementById('mlist');if(!en.length){el.innerHTML='<div style="text-align:center;padding:14px 0;color:var(--text3);font-size:11px;">No keys assigned yet</div>';return;}const tc={text:'#2ecc8a',shortcut:'#e0352b',macro:'#f0a020'};el.innerHTML=en.map(([k,v])=>{const p=k.split('-');p.shift();const lb=p.join('-');return`<div class="mi"><div class="mkey">${lb}</div><div class="mval">${v.value}</div><div class="mtype" style="color:${tc[v.type]};background:${tc[v.type]}20">${v.type}</div></div>`;}).join('');}
+
+// POMODORO
+function toggleDrop(e){if(e.target.classList.contains('pctrl')||e.target.classList.contains('pexp'))return;dropOpen=!dropOpen;document.getElementById('pdrop').classList.toggle('open',dropOpen);}
+document.addEventListener('click',e=>{if(!e.target.closest('.pp')&&!e.target.closest('.pdrop')){dropOpen=false;document.getElementById('pdrop').classList.remove('open');}});
+function pillPlay(e){e.stopPropagation();pomoToggle(e);}
+function pomoToggle(e){if(e)e.stopPropagation();if(pomoRun){clearInterval(pomoInt);pomoRun=false;document.getElementById('pmainbtn').textContent='▶ Resume';document.getElementById('pill-play').textContent='▶';}else{pomoRun=true;document.getElementById('pmainbtn').textContent='⏸ Pause';document.getElementById('pill-play').textContent='⏸';pomoInt=setInterval(tick,1000);}updatePill();}
+function pomoReset(e){if(e)e.stopPropagation();clearInterval(pomoInt);pomoRun=false;pomoBreak=false;pomoS=25*60;pomoTotal=25*60;document.getElementById('pmainbtn').textContent='▶ Start';document.getElementById('pill-play').textContent='▶';renderPomo();updatePill();}
+function tick(){pomoS--;if(pomoS<=0){clearInterval(pomoInt);pomoRun=false;if(!pomoBreak){pomoCyc=(pomoCyc+1)%4;pomoBreak=true;pomoS=5*60;pomoTotal=5*60;showToast('☕','Break time!');}else{pomoBreak=false;pomoS=25*60;pomoTotal=25*60;showToast('🎯','Focus session!');}document.getElementById('pmainbtn').textContent='▶ Start';document.getElementById('pill-play').textContent='▶';}renderPomo();updatePill();}
+function fmtT(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+function renderPomo(){const t=fmtT(pomoS);const cls=pomoBreak?' b':pomoS<=60?' w':'';document.getElementById('pbig').textContent=t;document.getElementById('pbig').className='pbig'+cls;document.getElementById('prefl').textContent=t;document.getElementById('prefl').className='prefl'+cls;document.getElementById('pmodelbl').textContent=pomoBreak?'Break Session':'Focus Session';const pct=pomoS/pomoTotal*100;const bf=document.getElementById('pbarfill');bf.style.width=pct+'%';bf.className='pbarfill'+(pomoBreak?' b':'');document.getElementById('pcrow').innerHTML=Array.from({length:4},(_,i)=>{let c='pcd';if(i<pomoCyc)c+=' done';else if(i===pomoCyc&&!pomoBreak&&pomoRun)c+=' cur';return`<div class="${c}"></div>`;}).join('');}
+function updatePill(){const t=fmtT(pomoS);const cls=pomoBreak?' b':pomoS<=60?' w':'';document.getElementById('pill-t').textContent=t;document.getElementById('pill-t').className='pt-sm'+cls;document.getElementById('pill-l').textContent=pomoBreak?'Break':'Focus';const pp2=document.getElementById('pp');pp2.className='pp'+(pomoRun?' run':'')+(pomoBreak?' brk':'');const r=8,circ=2*Math.PI*r,offset=circ*(1-pomoS/pomoTotal);const ring=document.getElementById('pr');ring.style.strokeDashoffset=offset;ring.className='pr-fill'+(pomoBreak?' b':'');}
+
+function toggleTheme(){document.body.classList.toggle('lm');document.getElementById('themebtn').textContent=document.body.classList.contains('lm')?'🌙':'☀';}
+let tT;function showToast(ic,msg){clearTimeout(tT);document.getElementById('tic').textContent=ic;document.getElementById('tmsg').textContent=msg;const t=document.getElementById('toast');t.classList.add('show');tT=setTimeout(()=>t.classList.remove('show'),2400);}
+
+init();
+</script>
+</body>
+</html>
